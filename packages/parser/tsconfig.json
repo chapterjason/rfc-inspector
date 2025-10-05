@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "declarationMap": true,
+    "paths": {
+      "@rfc-inspector/common": [
+        "../common/src/index.ts"
+      ],
+      "@rfc-inspector/common/*": [
+        "../common/src/*"
+      ],
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../common"
+    },
+  ]
+}

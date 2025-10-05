@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": [
+    "src",
+    "tests"
+  ],
+  "exclude": [
+    "dist",
+    "coverage"
+  ],
+  "references": [
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../tokenizer"
+    },
+    {
+      "path": "../heuristic"
+    }
+  ]
+}

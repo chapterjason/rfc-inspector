@@ -1,7 +1,0 @@
-[
-  {
-    "op": "replace",
-    "path": "/children/245/indent",
-    "value": 5
-  }
-]

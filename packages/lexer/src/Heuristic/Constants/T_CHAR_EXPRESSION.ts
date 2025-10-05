@@ -1,0 +1,1 @@
+export const T_CHAR_EXPRESSION = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;

@@ -1,0 +1,51 @@
+body {
+    font-family: Consolas, monospace;
+}
+
+button, .btn, input, select, textarea, label {
+    font-family: inherit;
+}
+
+.output-editor-wrapper {
+    background-color: #24292e;
+    height: calc(100vh - 56px - 50px - 48px);
+}
+
+.input-editor-wrapper {
+    background-color: #24292e;
+    height: calc(100vh - 56px - 48px);
+}
+
+.tabs-container > ul > li:first-child {
+    margin-left: 1rem;
+}
+
+#tokenizer-output,
+#tokenizer-json {
+    height: 100%;
+}
+
+div[data-mode-id="rfc-tokenizer"] .monaco-editor .newline-character {
+    color: #7a5cff !important;
+}
+
+div[data-mode-id="rfc-tokenizer"] .monaco-editor .form-feed-character {
+    position: relative;
+    color: #24292e !important;
+}
+
+div[data-mode-id="rfc-tokenizer"] .monaco-editor .form-feed-character:after {
+    position: absolute;
+    text-align: center;
+    left: 0;
+    top: -3px;
+    width: 100%;
+    height: 100%;
+    content: '\240C';
+    color: #ff6b6b;
+}
+
+.highlight-selected {
+    background-color: rgba(255,224,138,0.3) !important;
+    border-color: rgba(255,224,138,0.3) !important;
+}

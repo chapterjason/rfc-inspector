@@ -1,0 +1,43 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "declarationMap": true,
+    "paths": {
+      "@rfc-inspector/common": [
+        "../common/src/index.ts"
+      ],
+      "@rfc-inspector/common/*": [
+        "../common/src/*"
+      ],
+      "@rfc-inspector/tokenizer": [
+        "../tokenizer/src/index.ts"
+      ],
+      "@rfc-inspector/tokenizer/*": [
+        "../tokenizer/src/*"
+      ],
+      "@rfc-inspector/heuristic": [
+        "../heuristic/src/index.ts"
+      ],
+      "@rfc-inspector/heuristic/*": [
+        "../heuristic/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../common"
+    },
+    {
+      "path": "../tokenizer"
+    },
+    {
+      "path": "../heuristic"
+    }
+  ]
+}

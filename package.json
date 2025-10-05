@@ -1,22 +1,28 @@
 {
+  "name": "repo",
+  "private": true,
+  "workspaces": [
+    "packages/common",
+    "packages/lib",
+    "packages/heuristic",
+    "packages/tokenizer",
+    "packages/lexer",
+    "packages/bin",
+    "packages/browser"
+  ],
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "start": "node --enable-source-maps dist/index.js",
-    "watch": "tsc -p tsconfig.json --watch",
-    "dev:build": "tsc -p tsconfig.json --watch",
-    "dev:run": "node --enable-source-maps --watch dist/index.js",
-    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "prestart": "npm run build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "clean": "npm run clean --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {
-    "@types/node": "^24.3.3",
-    "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^9.35.0",
+    "eslint-plugin-import": "^2.32.0",
     "typescript": "^5.9.2",
-    "vitest": "^2.0.5"
+    "typescript-eslint": "^8.44.0"
   }
 }

@@ -1,0 +1,1 @@
+export type RenderLines = (startLineIndex: number, endLineIndexExclusive: number) => DocumentFragment | Promise<DocumentFragment>;

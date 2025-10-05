@@ -1,0 +1,1 @@
+export type ParametersRecord = Record<string, unknown>;

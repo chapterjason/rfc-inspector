@@ -1,0 +1,21 @@
+{
+  "name": "@rfc-inspector/bin",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@rfc-inspector/lexer": "*"
+  },
+  "scripts": {
+    "clean": "node -e \"fs=require('fs');['dist','tsconfig.tsbuildinfo'].forEach(p=>fs.rmSync(p,{recursive:true,force:true}))\"",
+    "build": "tsc --build",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "prestart": "npm run build",
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18"
+  }
+}

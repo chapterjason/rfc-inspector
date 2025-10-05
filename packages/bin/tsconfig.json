@@ -1,0 +1,34 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "lib": [
+      "ES2022"
+    ],
+    "paths": {
+      "@rfc-inspector/common": [
+        "../common/src/index.ts"
+      ],
+      "@rfc-inspector/common/*": [
+        "../common/src/*"
+      ],
+      "@rfc-inspector/lexer": [
+        "../lexer/src/index.ts"
+      ],
+      "@rfc-inspector/lexer/*": [
+        "../lexer/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../lexer"
+    }
+  ]
+}

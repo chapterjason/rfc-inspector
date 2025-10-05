@@ -1,0 +1,30 @@
+{
+  "name": "@rfc-inspector/tokenizer",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "clean": "node -e \"fs=require('fs');['dist','coverage','tsconfig.tsbuildinfo'].forEach(p=>fs.rmSync(p,{recursive:true,force:true}))\"",
+    "build": "tsc --build",
+    "watch": "tsc --watch",
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.9",
+    "vitest": "^2.0.5"
+  }
+}

@@ -1,0 +1,1 @@
+export const CAPTION_MARKERS = ['figure', 'table'];

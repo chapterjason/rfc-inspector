@@ -1,0 +1,30 @@
+{
+  "name": "@rfc-inspector/browser",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0-rc.0",
+    "@rfc-inspector/common": "*",
+    "@rfc-inspector/lexer": "*",
+    "@rfc-inspector/tokenizer": "*",
+    "bootstrap": "^5.3.8",
+    "kea": "^3.1.7",
+    "monaco-editor": "^0.53.0",
+    "react": "^19.2.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^19.2.0",
+    "esbuild": "^0.25"
+  },
+  "scripts": {
+    "clean": "node -e \"fs=require('fs');['dist'].forEach(p=>fs.rmSync(p,{recursive:true,force:true}))\"",
+    "build": "node scripts/esbuild.js build",
+    "typecheck": "tsc --project tsconfig.typecheck.json",
+    "watch": "node scripts/esbuild.js watch",
+    "serve": "node scripts/esbuild.js serve",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}
