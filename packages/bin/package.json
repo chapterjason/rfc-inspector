@@ -3,7 +3,8 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "@rfc-inspector/lexer": "*"
+    "@rfc-inspector/lexer": "*",
+    "@rfc-inspector/common": "*"
   },
   "scripts": {
     "clean": "node -e \"fs=require('fs');['dist','tsconfig.tsbuildinfo'].forEach(p=>fs.rmSync(p,{recursive:true,force:true}))\"",
