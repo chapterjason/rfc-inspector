@@ -1,6 +1,7 @@
 import {Button, ButtonGroup} from "react-bootstrap";
 import React, {Fragment} from "react";
 import {PageHeader} from "../../PageHeader.js";
+import {LexerReadonlyEditor} from "./LexerReadonlyEditor";
 
 export function LexerPage() {
     return (
@@ -12,6 +13,7 @@ export function LexerPage() {
                     </Button>
                 </ButtonGroup>
             </PageHeader>
+            <LexerReadonlyEditor/>
         </Fragment>
     )
 }

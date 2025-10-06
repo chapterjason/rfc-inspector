@@ -7,14 +7,49 @@
       "ES2022",
       "DOM"
     ],
-    "jsx": "react"
+    "jsx": "react",
+    "paths": {
+      "@rfc-inspector/common": [
+        "../common/src/index.ts"
+      ],
+      "@rfc-inspector/common/*": [
+        "../common/src/*"
+      ],
+      "@rfc-inspector/tokenizer": [
+        "../tokenizer/src/index.ts"
+      ],
+      "@rfc-inspector/tokenizer/*": [
+        "../tokenizer/src/*"
+      ],
+      "@rfc-inspector/lexer": [
+        "../lexer/src/index.ts"
+      ],
+      "@rfc-inspector/lexer/*": [
+        "../lexer/src/*"
+      ],
+      "@rfc-inspector/parser": [
+        "../parser/src/index.ts"
+      ],
+      "@rfc-inspector/parser/*": [
+        "../parser/src/*"
+      ]
+    }
   },
   "include": [
     "src"
   ],
   "references": [
     {
-      "path": "../lib"
+      "path": "../common"
+    },
+    {
+      "path": "../lexer"
+    },
+    {
+      "path": "../tokenizer"
+    },
+    {
+      "path": "../parser"
     }
   ]
 }

@@ -1,6 +1,6 @@
 import {regexRanges} from "./regexRanges.js";
 import {SYMBOL_LF} from "./SYMBOL_LF.js";
-import { editor } from "monaco-editor";
+import {editor, IDisposable} from "monaco-editor";
 
 export function registerVisualizeNewline(instance: editor.IStandaloneCodeEditor) {
     const collection = instance.createDecorationsCollection();
@@ -44,9 +44,11 @@ export function registerVisualizeNewline(instance: editor.IStandaloneCodeEditor)
     const d1 = instance.onDidChangeModel(render);
     const d2 = instance.onDidChangeModelContent(render);
 
-    return () => {
-        d1.dispose();
-        d2.dispose();
-        collection.clear();
-    };
+    return {
+        dispose() {
+            d1.dispose();
+            d2.dispose();
+            collection.clear();
+        }
+    } as IDisposable;
 }

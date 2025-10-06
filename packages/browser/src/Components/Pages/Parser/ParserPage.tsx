@@ -1,19 +1,18 @@
 import {Button, ButtonGroup} from "react-bootstrap";
 import React, {Fragment} from "react";
 import {PageHeader} from "../../PageHeader.js";
-import {TokenizerReadonlyEditor} from "./TokenizerReadonlyEditor";
 
-export function TokenizerPage() {
+export function ParserPage() {
     return (
         <Fragment>
-            <PageHeader title={"Tokenizer - JSON"}>
+            <PageHeader title={"Parser - JSON"}>
                 <ButtonGroup size={"sm"} className={"ms-auto"}>
                     <Button size={"sm"} variant={"secondary"}>
                         Copy JSON
                     </Button>
                 </ButtonGroup>
             </PageHeader>
-            <TokenizerReadonlyEditor/>
+            Editor here someday...
         </Fragment>
     )
 }

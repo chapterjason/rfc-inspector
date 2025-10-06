@@ -1,97 +1,81 @@
-import * as monaco from "monaco-editor";
-import {isWS} from "./isWS.js";
-import {lastWS} from "./lastWS.js";
+import {editor, IDisposable, Range, Selection} from "monaco-editor";
 
-export function registerHardWrap(editor: monaco.editor.IStandaloneCodeEditor, HARD_WRAP_COL = 72) {
+/**
+ * @todo needs human code style rework and review
+ *       works, but utility functions can be placed elsewhere
+ */
+
+const isWS = (ch: string) => /\s/.test(ch);
+
+function lastBreakPos(s: string, col: number, indentLen: number) {
+    const j = Math.min(col, s.length - 1);
+    for (let i = j; i >= indentLen; i--) if (isWS(s[i])) return i;
+    return -1;
+}
+function firstBreakPosAfter(s: string, from: number) {
+    for (let i = Math.max(0, from); i < s.length; i++) if (isWS(s[i])) return i;
+    return -1;
+}
+
+export function registerHardWrap(editor: editor.IStandaloneCodeEditor, HARD_WRAP_COL = 72) {
     let busy = false;
 
     function onChange() {
-        if (busy) {
-            return;
-        }
+        if (busy) return;
+
         const model = editor.getModel();
-
-        if (!model) {
-            return;
-        }
-
         const pos = editor.getPosition();
-        if (!pos) {
-            return;
-        }
+        if (!model || !pos) return;
 
         const n = pos.lineNumber;
         const text = model.getLineContent(n);
-        if (text.length <= HARD_WRAP_COL) {
-            return;
-        }
-
-        // Identify the current word around the caret (column is 1-based).
-        const idx = Math.max(0, Math.min(text.length, pos.column - 1));
-        let wsL = idx - 1;
-        while (wsL >= 0 && !isWS(text[wsL])) {
-            wsL--;
-        }
-        const wordStart = wsL + 1;
-
-        let wsR = idx;
-        while (wsR < text.length && !isWS(text[wsR])) {
-            wsR++;
-        }
-        const wordEnd = wsR; // exclusive
+        if (text.length <= HARD_WRAP_COL) return;
 
         const indent = (text.match(/^\s*/)?.[0]) ?? '';
+        const indentLen = indent.length;
 
-        // Case 1: word crosses the limit → move the whole word to next line.
-        if (wordStart <= HARD_WRAP_COL && HARD_WRAP_COL < wordEnd) {
-            const left = text.slice(0, wordStart).replace(/\s+$/, '');
-            const word = text.slice(wordStart, wordEnd);
-            const right = text.slice(wordEnd); // includes following space/text as-is
+        // 1) Prefer wrapping at last whitespace ≤ limit (never inside indent).
+        let splitAt = lastBreakPos(text, HARD_WRAP_COL, indentLen);
 
-            const range = new monaco.Range(n, 1, n, model.getLineMaxColumn(n));
-            const newText = `${left}\n${indent}${word}${right}`;
-
-            const newCaretCol = indent.length + word.length + 1; // after moved word
-            const caret = new monaco.Selection(n + 1, newCaretCol, n + 1, newCaretCol);
-
-            busy = true;
-            try {
-                editor.executeEdits('hard-wrap', [{range, text: newText}], [caret]);
-            } finally {
-                busy = false;
+        // 2) Fallback: if none, but the first breakable space exists after the limit,
+        // and the segment from indent to that space is a single word, split there.
+        if (splitAt < 0) {
+            const after = firstBreakPosAfter(text, HARD_WRAP_COL + 1);
+            if (after > 0) {
+                const segment = text.slice(indentLen, after); // content before that space
+                if (!/\s/.test(segment)) splitAt = after;     // single long word → split after it
             }
-            return;
         }
 
-        // Case 2: no crossing → wrap at last whitespace ≤ limit.
-        const splitAt = lastWS(text, HARD_WRAP_COL);
-        if (splitAt >= 0) {
-            const before = text.slice(0, splitAt);
-            const after = text.slice(splitAt + 1); // drop the split space
+        if (splitAt <= 0) return; // still nothing safe to do
 
-            // Recompute caret relative to split so it stays with what you typed.
-            const caretOnNext =
-                idx > splitAt ? indent.length + (idx - splitAt) : pos.column;
+        const before = text.slice(0, splitAt).replace(/\s+$/, '');
+        const after  = text.slice(splitAt + 1); // drop the split whitespace
+        if (!after.length) return;
 
-            const range = new monaco.Range(n, 1, n, model.getLineMaxColumn(n));
-            const newText = `${before}\n${indent}${after}`;
+        const caretIdx0 = Math.max(0, Math.min(text.length, pos.column - 1));
 
-            const caret = idx > splitAt
-                ? new monaco.Selection(n + 1, caretOnNext, n + 1, caretOnNext)
-                : new monaco.Selection(n, pos.column, n, pos.column);
+        const range  = new Range(n, 1, n, model.getLineMaxColumn(n));
+        const newTxt = `${before}\n${indent}${after}`;
 
-            busy = true;
-            try {
-                editor.executeEdits('hard-wrap', [{range, text: newText}], [caret]);
-            } finally {
-                busy = false;
-            }
+        const caret =
+            caretIdx0 > splitAt
+                ? new Selection(n + 1, indentLen + (caretIdx0 - splitAt) + 1, n + 1, indentLen + (caretIdx0 - splitAt) + 1)
+                : new Selection(n, pos.column, n, pos.column);
+
+        busy = true;
+        try {
+            editor.executeEdits('hard-wrap', [{ range, text: newTxt }], [caret]);
+        } finally {
+            busy = false;
         }
     }
 
     const d1 = editor.onDidChangeModelContent(onChange);
 
-    return () => {
-        d1.dispose();
-    };
-};
+    return {
+        dispose() {
+            d1.dispose();
+        }
+    } as IDisposable;
+}

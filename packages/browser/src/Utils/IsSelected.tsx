@@ -1,11 +1,8 @@
-import {type Token, TokenType} from "@rfc-inspector/tokenizer";
+import {LineToken} from "@rfc-inspector/tokenizer";
 import {Selection} from "monaco-editor";
+import {LexemeLine} from "@rfc-inspector/lexer";
 
-export function isSelected(token: Token, selections: Selection[]) {
-    if (token.type === TokenType.EOF) {
-        return false;
-    }
-
+export function isSelected(token: LineToken | LexemeLine, selections: Selection[]) {
     const {line} = token;
 
     for (const selection of selections) {

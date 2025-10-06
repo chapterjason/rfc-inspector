@@ -1,14 +1,17 @@
 import {Col, Row} from "react-bootstrap";
-import {Editor, type Monaco} from "@monaco-editor/react";
-import {editor, Selection} from "monaco-editor";
-import React, {use, useCallback, useEffect, useMemo, useState} from "react";
+import {Editor, type Monaco, useMonaco} from "@monaco-editor/react";
+import {editor, IDisposable} from "monaco-editor";
+import React, {use, useCallback, useEffect, useMemo, useRef} from "react";
 import {registerHardWrap} from "../extensions/hard-wrap/registerHardWrap.js";
 import {registerVisualizeNewline} from "../extensions/visualize-newline/registerVisualizeNewline.js";
 import {registerRfcLanguage} from "../editor/registerRfcLanguage.js";
-import {type Token, tokenize, TokenType} from "@rfc-inspector/tokenizer";
+import {tokenize} from "@rfc-inspector/tokenizer";
+import {Lexer} from "@rfc-inspector/lexer";
 import {SAMPLE_TEXT} from "../sample.js";
 import {InspectorContext} from "../Context/InspectorContext.js";
-import {isSelected} from "../Utils/IsSelected.js";
+import {useEditorHighlighting} from "../Hooks/useEditorHighlighting";
+
+const lexer = new Lexer();
 
 export function TextEditor() {
     const context = use(InspectorContext);
@@ -19,56 +22,67 @@ export function TextEditor() {
 
     const {
         text,
+        language,
+        highlightedLines,
 
         setText,
-        setTokenizerTokens,
+        setTokens,
+        setSelections,
+        setLexemes,
     } = context;
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const disposers = useRef<IDisposable[]>([]);
+    const monaco = useMonaco();
 
-    const [selections, setSelections] = useState<Selection[]>([]);
+    useEditorHighlighting(editorRef.current, highlightedLines);
 
     useEffect(() => {
-        const tokens = tokenize(text);
-        const isSelecting = !(
-            selections.length === 1 &&
-            selections[0].startLineNumber === selections[0].endLineNumber &&
-            selections[0].startColumn === selections[0].endColumn
-        );
+        const tokens = Array.from(tokenize(text));
 
-        if (selections.length === 0) {
-            setTokenizerTokens(Array.from(tokens));
+        setTokens(tokens);
 
+        const lexemes = lexer.lex(tokens);
+
+        setLexemes(lexemes);
+    }, [text, setTokens, setLexemes]);
+
+    useEffect(() => {
+        return () => {
+            disposers.current.forEach(disposer => disposer.dispose());
+            disposers.current = [];
+        };
+    }, []);
+
+    useEffect(() => {
+        const instance = editorRef.current;
+
+        if (!instance ||!monaco) {
             return;
         }
 
-        if (isSelecting) {
-            const selectedTokens: Token[] = [];
+        const model = instance.getModel();
 
-            for (const token of tokens) {
-                if (token.type === TokenType.EOF) {
-                    break;
-                }
-
-                if (isSelected(token, selections)) {
-                    selectedTokens.push(token);
-                }
-            }
-
-            setTokenizerTokens(selectedTokens);
-        } else {
-            setTokenizerTokens(Array.from(tokens));
-            // @todo create a state for selections, so we can move the scroll position in the other editor instead of reducing
+        if (!model) {
+            return;
         }
-    }, [text, selections, setTokenizerTokens]);
+
+        monaco.editor.setModelLanguage(model, language);
+    }, [language, editorRef.current, monaco]);
 
     function handleTextEditorOnMount(instance: editor.IStandaloneCodeEditor) {
-        registerHardWrap(instance);
-        registerVisualizeNewline(instance);
+        editorRef.current = instance;
+
+        disposers.current.push(registerHardWrap(instance));
+        disposers.current.push(registerVisualizeNewline(instance));
 
         instance.setValue(SAMPLE_TEXT);
+
         setText(SAMPLE_TEXT);
 
         // @todo dispose somehow
-        instance.onDidChangeCursorSelection((event) => setSelections([event.selection, ...event.secondarySelections]));
+        disposers.current.push(instance.onDidChangeCursorSelection((event) => {
+            setSelections([event.selection, ...event.secondarySelections]);
+        }));
     }
 
     function handleTextEditorBeforeMount(monaco: Monaco) {
@@ -85,17 +99,13 @@ export function TextEditor() {
                     <div className="input-editor-wrapper">
                         <Editor
                             height="100%"
-                            language={"rfc-tokenizer"}
+                            language={language}
                             theme={"rfc"}
                             defaultValue={''}
                             onMount={handleTextEditorOnMount}
                             beforeMount={handleTextEditorBeforeMount}
                             onChange={handleTextEditorChange}
                             options={({
-                                minimap: {
-                                    enabled: false,
-                                },
-
                                 renderWhitespace: "all",
 
                                 unicodeHighlight: {
@@ -118,9 +128,21 @@ export function TextEditor() {
                                 tabSize: 4,
                                 automaticLayout: true,
 
+                                folding: false,
+
+                                guides: {
+                                    highlightActiveBracketPair: false,
+                                    bracketPairsHorizontal: false,
+                                    bracketPairs: false,
+                                    indentation: false,
+                                    highlightActiveIndentation: false,
+                                },
+
                                 rulers: [
-                                    {column: 72, color: '#444d56'}
-                                ]
+                                    {column: 72, color: '#444d56'},
+                                ],
+
+                                "semanticHighlighting.enabled": true,
                             } as editor.IStandaloneEditorConstructionOptions)}
                         />
                     </div>

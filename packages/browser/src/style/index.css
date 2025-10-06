@@ -25,16 +25,16 @@ button, .btn, input, select, textarea, label {
     height: 100%;
 }
 
-div[data-mode-id="rfc-tokenizer"] .monaco-editor .newline-character {
+.monaco-editor .newline-character {
     color: #7a5cff !important;
 }
 
-div[data-mode-id="rfc-tokenizer"] .monaco-editor .form-feed-character {
+.monaco-editor .form-feed-character {
     position: relative;
     color: #24292e !important;
 }
 
-div[data-mode-id="rfc-tokenizer"] .monaco-editor .form-feed-character:after {
+.monaco-editor .form-feed-character:after {
     position: absolute;
     text-align: center;
     left: 0;

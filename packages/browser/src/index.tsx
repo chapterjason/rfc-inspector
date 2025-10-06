@@ -1,66 +1,12 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import './style/index.css';
-import {Navbar} from "./Components/Navbar.js";
-import {Button, ButtonGroup, Col, Container, Row, Tab, Tabs} from "react-bootstrap";
-import {TokenizerPage} from "./Components/Pages/Tokenizer/TokenizerPage.js";
-import {resetContext} from "kea";
-import {InspectorContextProvider} from "./Context/InspectorContext.js";
-import {PageHeader} from "./Components/PageHeader.js";
-import {TextEditor} from "./Components/TextEditor.js";
-
-resetContext({
-    plugins: [
-        // additional kea plugins
-    ],
-});
+import {App} from "./Components/App";
 
 document.addEventListener("DOMContentLoaded", () => {
     const root = createRoot(document.getElementById('app') as Element);
 
-    root.render(
-        <div>
-            <Navbar/>
-            <InspectorContextProvider>
-                <Container fluid className={"g-0"}>
-                    <Row className={"g-0"}>
-                        <Col xs={6} className={"border-end"}>
-                            <PageHeader title={"RFC TEXT"}>
-                                <ButtonGroup size={"sm"} className={"ms-auto me-2"}>
-                                    <Button size={"sm"} variant={"secondary"}>
-                                        Filter
-                                    </Button>
-                                </ButtonGroup>
-
-                                <ButtonGroup size={"sm"}>
-                                    <Button size={"sm"} variant={"secondary"}>
-                                        Copy TXT
-                                    </Button>
-                                </ButtonGroup>
-                            </PageHeader>
-                            <TextEditor/>
-                        </Col>
-                        <Col xs={6} className={"tabs-container"}>
-                            <Tabs
-                                defaultActiveKey="tokenizer"
-                                className="pt-2"
-                            >
-                                <Tab eventKey="tokenizer" title="tokenizer">
-                                    <TokenizerPage/>
-                                </Tab>
-                                <Tab eventKey="lexer" title="lexer">
-                                    Tab content for Profile
-                                </Tab>
-                                <Tab eventKey="parser" title="parser">
-                                    Tab content for Contact
-                                </Tab>
-                            </Tabs>
-                        </Col>
-                    </Row>
-                </Container>
-            </InspectorContextProvider>
-        </div>
-    );
+    root.render(<App/>);
 });
 
 /*
