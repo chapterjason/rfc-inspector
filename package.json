@@ -1,11 +1,10 @@
 {
-  "name": "repo",
   "private": true,
   "workspaces": [
     "packages/common",
-    "packages/lib",
     "packages/heuristic",
     "packages/tokenizer",
+    "packages/parser",
     "packages/lexer",
     "packages/bin",
     "packages/browser"

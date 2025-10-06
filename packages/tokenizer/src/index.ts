@@ -1,5 +1,6 @@
 export {tokenize} from "./Tokenizer/Tokenize.js";
 export type {Token} from "./Tokenizer/Token/Token.js";
+export type {LineToken} from "./Tokenizer/Token/LineToken.js";
 export {TokenType} from "./Tokenizer/Token/TokenType.js";
 export type {BlankLineToken} from "./Tokenizer/Token/BlankLineToken.js";
 export type {DataLineToken} from "./Tokenizer/Token/DataLineToken.js";
