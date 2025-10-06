@@ -111,16 +111,15 @@ export class Lexer {
 
         switch (token.type) {
             case TokenType.BLANK_LINE:
-                return {...base, type: LexemeType.BLANK} as BlankLexeme;
+                return {type: LexemeType.BLANK, ...base} as BlankLexeme;
             case TokenType.FORM_FEED_LINE:
-                return {...base, type: LexemeType.PAGE_BREAK} as PageBreakLexeme;
+                return {type: LexemeType.PAGE_BREAK, ...base} as PageBreakLexeme;
             case TokenType.DATA_LINE:
             default:
                 switch (type) {
                     case LexemeType.BLANK:
-                        return {...base, type} as BlankLexeme;
                     case LexemeType.PAGE_BREAK:
-                        return {...base, type} as PageBreakLexeme;
+                        return {type, ...base} as PageBreakLexeme;
                     case LexemeType.FRONT_PAGE_HEADER_LINE:
                     case LexemeType.TITLE_LINE:
                     case LexemeType.HEADING_LINE:
@@ -133,7 +132,7 @@ export class Lexer {
                     case LexemeType.FIGURE_LINE:
                     case LexemeType.TOC_LINE:
                     case LexemeType.TEXT_LINE:
-                        return {...base, type, text: token.data, indent: token.indent} as TextLexeme
+                        return {type, text: token.data, indent: token.indent, ...base} as TextLexeme
                     default:
                         throw new Error(`Token ${TokenType[token.type]} has invalid classification ${LexemeType[type]}`);
                 }

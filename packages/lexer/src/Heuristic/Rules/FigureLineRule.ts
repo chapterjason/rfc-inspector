@@ -11,7 +11,7 @@ import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
  * - Packet Diagram
  */
 export class FigureLineRule extends AbstractLexerRule {
-    private static figureSeparatorExpression = /^\+[-~+=|]+\+$/;
+    private static figureSeparatorExpression = /^\+[-~+=| ]+\+$/;
 
     constructor() {
         super("rfc-figure", LexemeType.FIGURE_LINE, true);
@@ -45,7 +45,7 @@ export class FigureLineRule extends AbstractLexerRule {
         }
 
         if (tokens.some(token => {
-            if (isDataToken(token)){
+            if (isDataToken(token)) {
                 return FigureLineRule.figureSeparatorExpression.test(token.data);
             }
 

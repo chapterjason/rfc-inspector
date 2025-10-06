@@ -501,6 +501,153 @@ describe('Lexer', () => {
             expect(relevantLines[38].type).toBe(LexemeType.EOF);
         });
 
+        it('should classify figure edge case', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '1.2.  Protocol Flow',
+                '',
+                '     +--------+                               +---------------+',
+                '     |        |--(A)- Authorization Request ->|   Resource    |',
+                '     |        |                               |     Owner     |',
+                '     |        |<-(B)-- Authorization Grant ---|               |',
+                '     |        |                               +---------------+',
+                '     |        |',
+                '     |        |                               +---------------+',
+                '     |        |--(C)-- Authorization Grant -->| Authorization |',
+                '     | Client |                               |     Server    |',
+                '     |        |<-(D)----- Access Token -------|               |',
+                '     |        |                               +---------------+',
+                '     |        |',
+                '     |        |                               +---------------+',
+                '     |        |--(E)----- Access Token ------>|    Resource   |',
+                '     |        |                               |     Server    |',
+                '     |        |<-(F)--- Protected Resource ---|               |',
+                '     +--------+                               +---------------+',
+                '',
+                '                     Figure 1: Abstract Protocol Flow',
+                '',
+                '   The abstract OAuth 2.0 flow illustrated in Figure 1 describes the',
+                '   interaction between the four roles and includes the following steps:',
+                '',
+            ];
+
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const relevantLines = result.slice(genericRfcLines.length);
+            expect(result.length).toBe(input.length);
+
+            expect(relevantLines[0].type).toBe(LexemeType.HEADING_LINE);
+            expect(relevantLines[1].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[2].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[3].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[4].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[5].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[6].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[7].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[8].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[9].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[10].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[11].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[12].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[13].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[14].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[15].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[15].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[16].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[17].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[18].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[19].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[20].type).toBe(LexemeType.CAPTION_LINE);
+            expect(relevantLines[21].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[22].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[23].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[24].type).toBe(LexemeType.EOF);
+        });
+
+        it('should classify figure edge case 2', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '   authorization information.  Unlike access tokens, refresh tokens are',
+                '   intended for use only with authorization servers and are never sent',
+                '   to resource servers.',
+                '',
+                '  +--------+                                           +---------------+',
+                '  |        |--(A)------- Authorization Grant --------->|               |',
+                '  |        |                                           |               |',
+                '  |        |<-(B)----------- Access Token -------------|               |',
+                '  |        |               & Refresh Token             |               |',
+                '  |        |                                           |               |',
+                '  |        |                            +----------+   |               |',
+                '  |        |--(C)---- Access Token ---->|          |   |               |',
+                '  |        |                            |          |   |               |',
+                '  |        |<-(D)- Protected Resource --| Resource |   | Authorization |',
+                '  | Client |                            |  Server  |   |     Server    |',
+                '  |        |--(E)---- Access Token ---->|          |   |               |',
+                '  |        |                            |          |   |               |',
+                '  |        |<-(F)- Invalid Token Error -|          |   |               |',
+                '  |        |                            +----------+   |               |',
+                '  |        |                                           |               |',
+                '  |        |--(G)----------- Refresh Token ----------->|               |',
+                '  |        |                                           |               |',
+                '  |        |<-(H)----------- Access Token -------------|               |',
+                '  +--------+           & Optional Refresh Token        +---------------+',
+                '',
+                '               Figure 2: Refreshing an Expired Access Token',
+                '',
+                '   The flow illustrated in Figure 2 includes the following steps:',
+                '',
+            ];
+
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const relevantLines = result.slice(genericRfcLines.length);
+            expect(result.length).toBe(input.length);
+
+            expect(relevantLines[0].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[1].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[2].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[3].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[4].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[5].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[6].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[7].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[8].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[9].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[10].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[11].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[12].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[13].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[14].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[15].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[15].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[16].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[17].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[18].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[19].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[20].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[21].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[22].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[23].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[23].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[24].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[25].type).toBe(LexemeType.CAPTION_LINE);
+            expect(relevantLines[26].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[27].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[28].type).toBe(LexemeType.EOF);
+        });
+
         it('should classify page header lines', () => {
             // Arrange
             const sut = new Lexer();

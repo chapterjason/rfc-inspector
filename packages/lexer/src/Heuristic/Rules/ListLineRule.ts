@@ -17,9 +17,9 @@ function trimEnd<T>(items: T[], predicate: (item: T) => boolean) {
 }
 
 export class ListLineRule extends AbstractLexerRule {
-    private static bulletExpression = /^\s*([-*+])(\s+)\S/;
+    private static bulletExpression = /^\s*([-*+o])(\s+)\S/;
     private static decimalDotExpression = /^\s*(\d+\.)(\s+)\S/i;
-    private static alphaDotExpression = /^\s*([a-z]+\.)(\s+)\S/i;
+    private static alphaDotExpression = /^\s*([a-z]\.)(\s+)\S/i;
     private static romanDotExpression = /^\s*([ivxlcdm]+\.)(\s+)\S/i;
     private static parentheticalExpression = /^\s*(\((?:\d+|[a-z]|[ivxlcdm]+)\))(\s+)\S/i;
 

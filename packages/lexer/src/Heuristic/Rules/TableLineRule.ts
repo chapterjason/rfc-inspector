@@ -5,7 +5,7 @@ import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
 import {isDataToken} from "../Utils/IsDataToken.js";
 
 export class TableLineRule extends AbstractLexerRule {
-    private static tableSeparatorExpression = /\+[+-]+\+/;
+    private static tableSeparatorExpression = /^\+[+-]+\+$/;
 
     constructor() {
         super("rfc-table", LexemeType.TABLE_LINE, true);
@@ -41,7 +41,6 @@ export class TableLineRule extends AbstractLexerRule {
                 }
 
                 if (index === tokens.length - 1) {
-                    // last table line should match it
                     // @todo validate, I hope this is the case for most of all the tables, who knows :)
                     if (!TableLineRule.tableSeparatorExpression.test(token.data)) {
                         return false;
