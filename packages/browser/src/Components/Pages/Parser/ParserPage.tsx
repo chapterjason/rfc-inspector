@@ -1,6 +1,7 @@
 import {Button, ButtonGroup} from "react-bootstrap";
 import React, {Fragment} from "react";
 import {PageHeader} from "../../PageHeader.js";
+import {ParserReadonlyEditor} from "./ParserReadonlyEditor.js";
 
 export function ParserPage() {
     return (
@@ -12,7 +13,7 @@ export function ParserPage() {
                     </Button>
                 </ButtonGroup>
             </PageHeader>
-            Editor here someday...
+            <ParserReadonlyEditor/>
         </Fragment>
     )
 }

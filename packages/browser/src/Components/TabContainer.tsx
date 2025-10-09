@@ -2,30 +2,47 @@ import {Col, Tab, Tabs} from "react-bootstrap";
 import {TokenizerPage} from "./Pages/Tokenizer/TokenizerPage";
 import {LexerPage} from "./Pages/Lexer/LexerPage";
 import {ParserPage} from "./Pages/Parser/ParserPage";
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import {InspectorContext} from "../Context/InspectorContext";
 
 export function TabContainer() {
-    const {language, setLanguage} = useContext(InspectorContext);
+    const context = useContext(InspectorContext);
+
+    if (!context) {
+        throw new Error('TabContainer must be used within a InspectorContextProvider.');
+    }
+
+    const {language, setLanguage} = context;
+
+    function handleOnSelect(key: string | null){
+        switch (key ?? 'parser') {
+            case "parser":
+                if (language !== "rfc-parser") {
+                    setLanguage("rfc-parser");
+                }
+                break;
+            case "tokenizer":
+                if (language !== "rfc-tokenizer") {
+                    setLanguage("rfc-tokenizer");
+                }
+                break;
+            case "lexer":
+                if (language !== "rfc-lexer") {
+                    setLanguage("rfc-lexer");
+                }
+                break;
+        }
+    }
+
+    useEffect(() => {
+        handleOnSelect('parser');
+    }, []);
 
     return (
         <Col xs={6} className={"tabs-container"}>
             <Tabs
-                defaultActiveKey="tokenizer"
-                onSelect={(key) => {
-                    switch (key) {
-                        case "parser":
-                        case "tokenizer":
-                            if (language !== "rfc") {
-                                setLanguage("rfc");
-                            }
-                            break;
-                        case "lexer":
-                            if (language !== "rfc") {
-                                setLanguage("rfc");
-                            }
-                    }
-                }}
+                defaultActiveKey="parser"
+                onSelect={handleOnSelect}
                 className="pt-2"
             >
                 <Tab eventKey="tokenizer" title="tokenizer">
