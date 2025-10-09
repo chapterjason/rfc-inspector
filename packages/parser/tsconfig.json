@@ -12,6 +12,12 @@
       "@rfc-inspector/common/*": [
         "../common/src/*"
       ],
+      "@rfc-inspector/lexer": [
+        "../lexer/src/index.ts"
+      ],
+      "@rfc-inspector/lexer/*": [
+        "../lexer/src/*"
+      ]
     }
   },
   "include": [
@@ -20,6 +26,9 @@
   "references": [
     {
       "path": "../common"
+    },
+    {
+      "path": "../lexer"
     },
   ]
 }

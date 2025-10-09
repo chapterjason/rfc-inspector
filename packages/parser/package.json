@@ -28,6 +28,7 @@
     "vitest": "^2.0.5"
   },
   "dependencies": {
-    "@rfc-inspector/common": "*"
+    "@rfc-inspector/common": "*",
+    "@rfc-inspector/lexer": "*"
   }
 }
