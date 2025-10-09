@@ -38,6 +38,7 @@ export class NodeEncoder extends TreeWalker {
     public encode(node: Node): EncodedToken[] {
         this.semanticTokens = [];
         this.walk(node, () => {
+            // noop
         });
         return this.encodeTokens(this.semanticTokens);
     }
@@ -114,7 +115,6 @@ export class NodeEncoder extends TreeWalker {
                 columnIndex,
                 modifierIndex,
                 length,
-                node,
             } = semanticToken;
 
             const currentLineIndex = lineIndex;

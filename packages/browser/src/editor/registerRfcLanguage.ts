@@ -189,7 +189,7 @@ export function registerRfcLanguage(monaco: Monaco) {
     });
 
     monaco.languages.registerLinkProvider("rfc-parser", {
-        provideLinks(model: editor.ITextModel, token: CancellationToken): languages.ProviderResult<languages.ILinksList> {
+        provideLinks(model: editor.ITextModel, _token: CancellationToken): languages.ProviderResult<languages.ILinksList> {
             const value = model.getValue() ?? '';
             const tokens = Array.from(tokenize(value));
             const lexemes = lexer.lex(tokens);
@@ -218,7 +218,7 @@ export function registerRfcLanguage(monaco: Monaco) {
             return  {
                 links,
                 dispose: () => {
-
+                    // noop
                 },
             }
         }

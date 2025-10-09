@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises";
 import {mkdirSync, readFileSync} from "fs";
 import * as path from "node:path";
 import {mapWithConcurrency} from "./Utils/MapWithConcurrency.js";
-import {DataLineToken, render, type Token, tokenize, TokenType,} from "@rfc-inspector/tokenizer";
+import {render, type Token, tokenize, TokenType,} from "@rfc-inspector/tokenizer";
 import {ArrayCursor} from "@rfc-inspector/common";
 import {existsSync} from "node:fs";
 

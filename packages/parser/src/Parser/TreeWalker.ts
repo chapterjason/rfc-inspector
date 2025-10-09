@@ -10,7 +10,6 @@ import {FrontPageHeaderRequestForCommentsNode} from "./Node/FrontPageHeader/Fron
 import {FrontPageHeaderReferenceListingNode} from "./Node/FrontPageHeader/FrontPageHeaderReferenceListingNode";
 import {FrontPageHeaderListingNode} from "./Node/FrontPageHeader/FrontPageHeaderListingNode";
 import {FrontPageHeaderAuthorNode} from "./Node/FrontPageHeader/FrontPageHeaderAuthorNode";
-import type {BaseNode} from "./Node/BaseNode.js";
 
 export class TreeWalker {
 

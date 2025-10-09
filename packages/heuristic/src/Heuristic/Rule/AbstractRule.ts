@@ -1,7 +1,7 @@
 import type {RuleInterface} from "./RuleInterface.js";
 import type {RuleResult} from "./RuleResult.js";
 import type {Context} from "../Context/Context.js";
-import type {Parameters, ParametersRecord} from "@rfc-inspector/common";
+import type {ParametersRecord} from "@rfc-inspector/common";
 import type {Classification} from "../Classification.js";
 
 /**

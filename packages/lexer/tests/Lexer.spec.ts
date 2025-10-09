@@ -3,7 +3,6 @@ import {Lexer} from '../src/index.js';
 import type {Token} from '@rfc-inspector/tokenizer';
 import {tokenize} from "@rfc-inspector/tokenizer";
 import {LexemeType} from "../src/Lexer/Lexeme/LexemeType.js";
-import {stringifyCompact} from "@rfc-inspector/common";
 
 describe('Lexer', () => {
     const metadataLines = [

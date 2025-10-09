@@ -1,4 +1,4 @@
-import {ArrayCursor, getIndention, stringifyCompact} from "@rfc-inspector/common";
+import {ArrayCursor, getIndention} from "@rfc-inspector/common";
 import {type FrontPageHeaderLexeme, type Lexeme, LexemeType} from "@rfc-inspector/lexer";
 import type {DocumentNode} from "../Node/DocumentNode.js";
 import type {TextNode} from "../Node/TextNode.js";

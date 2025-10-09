@@ -22,6 +22,8 @@ export default defineConfig(
             },
         },
         rules: {
+            '@typescript-eslint/no-dynamic-delete': 'off',
+            '@typescript-eslint/prefer-for-of': 'off',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
                 {

@@ -2,9 +2,9 @@ import {describe, expect, it} from "vitest";
 import {tokenize} from "@rfc-inspector/tokenizer";
 import {Lexer} from "@rfc-inspector/lexer";
 import {parse} from "../../src";
-import {TreeWalker} from "../../src/Parser/Walk";
-import {NodeType} from "../../src/Parser/NodeType";
-import {Node} from "../../src/Parser/Node.js";
+import {TreeWalker} from "../../src/index.js";
+import {NodeType} from "../../src/index.js";
+import {Node} from "../../src/index.js";
 
 const lexer = new Lexer();
 const walker = new TreeWalker();

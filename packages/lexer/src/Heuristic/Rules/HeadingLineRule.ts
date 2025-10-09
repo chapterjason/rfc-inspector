@@ -5,7 +5,6 @@ import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
 import {isDataToken} from "../Utils/IsDataToken.js";
 import {countDataLines} from "../Utils/CountDataLines.js";
 import type {LexerClassification} from "../LexerClassification.js";
-import {stringifyCompact} from "@rfc-inspector/common";
 import {parseTableOfContentsEntry} from "../Utils/TableOfContents/ParseTableOfContentsEntry.js";
 
 export class HeadingLineRule extends AbstractLexerRule {
@@ -26,7 +25,7 @@ export class HeadingLineRule extends AbstractLexerRule {
             const tableOfContentEntries = context.parameters.get('tableOfContents');
 
             if (tableOfContentEntries !== undefined) {
-                let scores = [];
+                const scores = [];
 
                 for (const tableOfContentEntry of tableOfContentEntries) {
                     const {numbering, title} = tableOfContentEntry;
