@@ -5,7 +5,6 @@ import type {Monaco} from "@monaco-editor/react";
 import {Token, tokenize, TokenType} from "@rfc-inspector/tokenizer";
 import {Lexeme, LexemeType, Lexer} from "@rfc-inspector/lexer";
 import {Node, NodeType, parse, TreeWalker} from "@rfc-inspector/parser";
-import {chunk, stringifyCompact} from "@rfc-inspector/common";
 import {NodeEncoder} from "./encoder.js";
 
 const lexer = new Lexer();
@@ -147,8 +146,6 @@ export function registerRfcLanguage(monaco: Monaco) {
                 lineNumber++;
             }
 
-            console.log(stringifyCompact(chunk(data, 6)));
-
             return {
                 data: new Uint32Array(data),
             } as languages.SemanticTokens;
@@ -176,8 +173,6 @@ export function registerRfcLanguage(monaco: Monaco) {
             const document = parse(lexemes);
 
             const data = nodeEncoder.encode(document).flat();
-
-            console.log(stringifyCompact(chunk(data, 5)));
 
             return {
                 data: new Uint32Array(data),

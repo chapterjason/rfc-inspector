@@ -239,7 +239,6 @@ function parseLeftFrontPageHeaderEntries(nodes: TextNode[]): {
     }
 
     if (undefined === source) {
-        console.log({nodes});
         throw new Error('Missing source: ' + nodes.map(node => node.text).join('\n'));
     }
 
