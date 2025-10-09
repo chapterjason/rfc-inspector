@@ -3,7 +3,7 @@ import {Editor, Monaco} from "@monaco-editor/react";
 import {editor, IDisposable} from "monaco-editor";
 import React, {use, useDeferredValue, useEffect, useMemo, useRef} from "react";
 import {InspectorContext} from "../../../Context/InspectorContext.js";
-import {registerRfcLanguage} from "../../../editor/registerRfcLanguage";
+import {registerRfcLanguage} from "../../../Editor/RegisterRfcLanguage.js";
 
 export function ParserReadonlyEditor() {
     const context = use(InspectorContext);

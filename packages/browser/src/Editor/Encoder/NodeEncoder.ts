@@ -1,29 +1,14 @@
-import {getNodeType} from "./registerRfcLanguage.js";
 import {
-    type DocumentReferenceNode, type FrontPageHeaderAuthorNode,
+    type DocumentReferenceNode,
+    type FrontPageHeaderAuthorNode,
     type FrontPageHeaderSourceNode,
     type Node,
     type SourceReference,
     TreeWalker
 } from "@rfc-inspector/parser";
-
-export type EncodedToken = [
-    number, // deltaLine
-    number, // deltaColumn
-    number, // length
-    number, // typeIndex
-    number, // modifierIndex
-];
-
-export interface SemanticToken {
-    node: Node;
-
-    lineIndex: number;
-    columnIndex: number;
-    length: number;
-    typeIndex: number;
-    modifierIndex: number;
-}
+import type {SemanticToken} from "./SemanticToken.js";
+import type {EncodedToken} from "./EncodedToken.js";
+import {getNodeType} from "../../Utils/GetNodeType.js";
 
 export class NodeEncoder extends TreeWalker {
     protected semanticTokens: SemanticToken[] = [];
@@ -78,7 +63,7 @@ export class NodeEncoder extends TreeWalker {
     }
 
     protected walkFrontPageHeaderAuthorNode(node: FrontPageHeaderAuthorNode, _callback: (node: Node) => void) {
-        const {type,name,affiliation} = node;
+        const {type, name, affiliation} = node;
 
         const typeIndex = this.tokenTypes.indexOf(getNodeType(type));
 
@@ -90,7 +75,7 @@ export class NodeEncoder extends TreeWalker {
         this.semanticTokens.push(this.buildSemanticToken(node, typeIndex, name.src));
 
         if (affiliation !== undefined && affiliation.src !== undefined) {
-            this.semanticTokens.push(this.buildSemanticToken(node, typeIndex+1, affiliation.src));
+            this.semanticTokens.push(this.buildSemanticToken(node, typeIndex + 1, affiliation.src));
         }
     }
 

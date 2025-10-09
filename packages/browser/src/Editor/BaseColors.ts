@@ -1,4 +1,4 @@
-export const colors = {
+export const baseColors = {
     "editor.foreground": "#f6f8fa",
     "editor.background": "#24292e",
     "editor.selectionBackground": "#4c2889",

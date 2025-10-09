@@ -8,7 +8,7 @@ import {getSelectedTokens} from "../../../Utils/GetSelectedTokens";
 import {useEditorHighlighting} from "../../../Hooks/useEditorHighlighting";
 import {expandSelection} from "../../../Utils/ExpandSelection";
 import {uniqueArrayFilter} from "../../../Utils/UniqueArrayFilter";
-import {registerRfcLanguage} from "../../../editor/registerRfcLanguage";
+import {registerRfcLanguage} from "../../../Editor/RegisterRfcLanguage.js";
 
 export function TokenizerReadonlyEditor() {
     const context = use(InspectorContext);

@@ -6,7 +6,7 @@ import {InspectorContext} from "../../../Context/InspectorContext.js";
 import {stringifyCompact} from "@rfc-inspector/common";
 import {expandSelection} from "../../../Utils/ExpandSelection";
 import {uniqueArrayFilter} from "../../../Utils/UniqueArrayFilter";
-import {registerRfcLanguage} from "../../../editor/registerRfcLanguage";
+import {registerRfcLanguage} from "../../../Editor/RegisterRfcLanguage.js";
 import {Lexeme, LexemeLine, LexemeType} from "@rfc-inspector/lexer";
 import {useEditorHighlighting} from "../../../Hooks/useEditorHighlighting";
 import {isSelected} from "../../../Utils/IsSelected";

@@ -1,4 +1,4 @@
-import {regexRanges} from "./regexRanges.js";
+import {regexRanges} from "./RegexRanges.js";
 import {SYMBOL_LF} from "./SYMBOL_LF.js";
 import {editor, IDisposable} from "monaco-editor";
 

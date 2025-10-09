@@ -2,8 +2,8 @@ import {Col, Row} from "react-bootstrap";
 import {Editor, type Monaco, useMonaco} from "@monaco-editor/react";
 import {editor, IDisposable, Range} from "monaco-editor";
 import React, {use, useCallback, useEffect, useMemo, useRef} from "react";
-import {registerVisualizeNewline} from "../extensions/visualize-newline/registerVisualizeNewline.js";
-import {normalizeType, registerRfcLanguage} from "../editor/registerRfcLanguage.js";
+import {registerVisualizeNewline} from "../Editor/Extensions/VisualizeNewline/RegisterVisualizeNewline.js";
+import {registerRfcLanguage} from "../Editor/RegisterRfcLanguage.js";
 import {tokenize, TokenType} from "@rfc-inspector/tokenizer";
 import {Lexer} from "@rfc-inspector/lexer";
 import {SAMPLE_TEXT} from "../sample.js";
@@ -11,6 +11,7 @@ import {InspectorContext} from "../Context/InspectorContext.js";
 import {useEditorHighlighting} from "../Hooks/useEditorHighlighting";
 import {useEditorDecorations} from "../Hooks/useEditorDecorations";
 import {parse} from "@rfc-inspector/parser";
+import {normalizeType} from "../Utils/NormalizeType.js";
 
 const lexer = new Lexer();
 
@@ -90,13 +91,13 @@ export function TextEditor() {
 
             const decorations = Array.from(lines.entries())
                 .map(([line, className]) => ({
-                range: new Range(line, 1, line, 1),
-                options: {
-                    isWholeLine: true,
-                    className,
-                    stickiness: editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
-                }
-            } as editor.IModelDeltaDecoration));
+                    range: new Range(line, 1, line, 1),
+                    options: {
+                        isWholeLine: true,
+                        className,
+                        stickiness: editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+                    }
+                } as editor.IModelDeltaDecoration));
 
             decorationsCollection.set(decorations);
         };
@@ -149,6 +150,24 @@ export function TextEditor() {
         disposers.current.push(instance.onDidChangeCursorSelection((event) => {
             setSelections([event.selection, ...event.secondarySelections]);
         }));
+
+        const model = instance.getModel();
+
+        if (!model) {
+            throw new Error("No model");
+        }
+
+        disposers.current.push(model.onDidChangeContent(() => {
+            if (!model._rfc){
+                model._rfc = {};
+            }
+
+            model._rfc.needsUpdate = true;
+        }));
+
+        model.onWillDispose(() => {
+            delete model._rfc;
+        });
     }
 
     function handleTextEditorBeforeMount(monaco: Monaco) {
@@ -168,6 +187,7 @@ export function TextEditor() {
                             language={language}
                             theme={"rfc"}
                             defaultValue={''}
+                            keepCurrentModel={true}
                             onMount={handleTextEditorOnMount}
                             beforeMount={handleTextEditorBeforeMount}
                             onChange={handleTextEditorChange}
