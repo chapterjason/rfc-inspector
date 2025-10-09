@@ -87,7 +87,7 @@ export class ArrayCursor<T> {
         return this.items[desiredIndex];
     }
 
-    peekForwardUntil(predicate: (item: T) => boolean): T[] {
+    peekForwardUntil(predicate: (item: T, offset: number, index: number) => boolean): T[] {
         const result: T[] = [];
         const lastIndex = this.items.length - this.index;
 
@@ -100,7 +100,7 @@ export class ArrayCursor<T> {
                 break;
             }
 
-            if (predicate(nextItem)) {
+            if (predicate(nextItem, offset, this.index + offset)) {
                 break;
             }
 
