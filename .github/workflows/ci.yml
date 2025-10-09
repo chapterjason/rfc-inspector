@@ -53,6 +53,11 @@ jobs:
             -   name: Install dependencies
                 run: npm ci
 
+            # due to eslint usage, ts project references are not supported
+            -   name: Build deps
+                run: npm run build --workspace @rfc-inspector/parser
+                if: matrix.workspace == '@rfc-inspector/browser'
+
             -   name: Build
                 run: npm run build --workspace ${{ matrix.workspace }}
 
