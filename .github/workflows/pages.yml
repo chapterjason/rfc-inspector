@@ -28,11 +28,8 @@ jobs:
             - name: Install
               run: npm ci
 
-            - name: Build library package
-              run: npm run build --workspace @rfc-inspector/lib
-
-            - name: Build browser bundle
-              run: npm run build --workspace @rfc-inspector/browser
+            - name: Build
+              run: npm run build
 
             # Assemble the static site to publish
             - name: Prepare site bundle
