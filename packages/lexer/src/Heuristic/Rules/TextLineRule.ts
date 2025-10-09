@@ -19,7 +19,7 @@ export class TextLineRule extends AbstractLexerRule {
 
         if (token.type === TokenType.DATA_LINE) {
             // Only a small score as every more specific rule should be considered instead
-            return createRuleResult(1, 10);
+            return createRuleResult(1, 20);
         }
 
         return false;

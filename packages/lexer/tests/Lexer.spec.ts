@@ -3,6 +3,7 @@ import {Lexer} from '../src/index.js';
 import type {Token} from '@rfc-inspector/tokenizer';
 import {tokenize} from "@rfc-inspector/tokenizer";
 import {LexemeType} from "../src/Lexer/Lexeme/LexemeType.js";
+import {stringifyCompact} from "@rfc-inspector/common";
 
 describe('Lexer', () => {
     const metadataLines = [
@@ -107,21 +108,113 @@ describe('Lexer', () => {
             const offset = genericRfcLines.length;
             expect(result.length).toBe(input.length);
             expect(result[offset].type).toBe(LexemeType.LIST_LINE);
-            expect(result[offset+1].type).toBe(LexemeType.LIST_LINE);
-            expect(result[offset+2].type).toBe(LexemeType.BLANK);
-            expect(result[offset+3].type).toBe(LexemeType.LIST_LINE);
-            expect(result[offset+4].type).toBe(LexemeType.BLANK);
-            expect(result[offset+5].type).toBe(LexemeType.LIST_LINE);
-            expect(result[offset+6].type).toBe(LexemeType.BLANK);
-            expect(result[offset+7].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+8].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+9].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+10].type).toBe(LexemeType.BLANK);
-            expect(result[offset+11].type).toBe(LexemeType.CAPTION_LINE);
-            expect(result[offset+12].type).toBe(LexemeType.BLANK);
-            expect(result[offset+13].type).toBe(LexemeType.LIST_LINE);
-            expect(result[offset+14].type).toBe(LexemeType.BLANK);
-            expect(result[offset+15].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset + 1].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 2].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 3].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 4].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 5].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 6].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 7].type).toBe(LexemeType.TABLE_LINE);
+            expect(result[offset + 8].type).toBe(LexemeType.TABLE_LINE);
+            expect(result[offset + 9].type).toBe(LexemeType.TABLE_LINE);
+            expect(result[offset + 10].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 11].type).toBe(LexemeType.CAPTION_LINE);
+            expect(result[offset + 12].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 13].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 14].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 15].type).toBe(LexemeType.TEXT_LINE);
+        });
+
+        it('should classify list span over page breaks', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '   Text before the list',
+                '',
+                '   o  An external user-agent may improve completion rate, as the',
+                '      resource owner may already have an active session with the',
+                '      authorization server, removing the need to re-authenticate.  It',
+                '      provides a familiar end-user experience and functionality.  The',
+                '',
+                '',
+                '',
+                'Hardt                        Standards Track                   [Page 52]',
+                '\f',
+                'RFC 6749                        OAuth 2.0                   October 2012',
+                '',
+                '',
+                '      resource owner may also rely on user-agent features or extensions',
+                '      to assist with authentication (e.g., password manager, 2-factor',
+                '      device reader).',
+                '',
+                '   Text after the list',
+                '',
+            ];
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const offset = genericRfcLines.length;
+            expect(result.length).toBe(input.length);
+            expect(result[offset].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset + 1].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 2].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 3].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 4].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 5].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 6].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 7].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 8].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 9].type).toBe(LexemeType.PAGE_FOOTER);
+            expect(result[offset + 10].type).toBe(LexemeType.PAGE_BREAK);
+            expect(result[offset + 11].type).toBe(LexemeType.PAGE_HEADER);
+            expect(result[offset + 12].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 13].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 14].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 15].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 16].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 17].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 18].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset + 19].type).toBe(LexemeType.EOF);
+        });
+
+
+        it('should classify terms as list', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '   Text before the list',
+                '',
+                '   resource owner',
+                '      An entity capable of granting access to a protected resource.',
+                '      When the resource owner is a person, it is referred to as an',
+                '      end-user.',
+                '',
+                '   Text after the list',
+                '',
+            ];
+
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const offset = genericRfcLines.length;
+            expect(result.length).toBe(input.length);
+            expect(result[offset].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset + 1].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 2].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 3].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 4].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 5].type).toBe(LexemeType.LIST_LINE);
+            expect(result[offset + 6].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 7].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset + 8].type).toBe(LexemeType.EOF);
         });
 
         it('should classify note lines', () => {
@@ -146,6 +239,42 @@ describe('Lexer', () => {
             expect(result[offset].type).toBe(LexemeType.NOTE_LINE);
         });
 
+        it('should classify block qoute lines', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '   | some text here',
+                '   | and there',
+                '',
+                '   it can also me multiple lines',
+                '',
+                '   > this is a block quote',
+                '   > it can also me multiple lines',
+                '',
+                '   text after the note',
+                '',
+            ];
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const offset = genericRfcLines.length;
+            expect(result.length).toBe(input.length);
+            expect(result[offset].type).toBe(LexemeType.BLOCKQUOTE_LINE);
+            expect(result[offset+1].type).toBe(LexemeType.BLOCKQUOTE_LINE);
+            expect(result[offset+2].type).toBe(LexemeType.BLANK);
+            expect(result[offset+3].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset+4].type).toBe(LexemeType.BLANK);
+            expect(result[offset+5].type).toBe(LexemeType.BLOCKQUOTE_LINE);
+            expect(result[offset+6].type).toBe(LexemeType.BLOCKQUOTE_LINE);
+            expect(result[offset+7].type).toBe(LexemeType.BLANK);
+            expect(result[offset+8].type).toBe(LexemeType.TEXT_LINE);
+            expect(result[offset+9].type).toBe(LexemeType.EOF);
+        });
+
         it('should classify table lines', () => {
             // Arrange
             const sut = new Lexer();
@@ -168,11 +297,11 @@ describe('Lexer', () => {
             const offset = genericRfcLines.length;
             expect(result.length).toBe(input.length);
             expect(result[offset].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+1].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+2].type).toBe(LexemeType.TABLE_LINE);
-            expect(result[offset+3].type).toBe(LexemeType.BLANK);
-            expect(result[offset+4].type).toBe(LexemeType.CAPTION_LINE);
-            expect(result[offset+5].type).toBe(LexemeType.CAPTION_LINE);
+            expect(result[offset + 1].type).toBe(LexemeType.TABLE_LINE);
+            expect(result[offset + 2].type).toBe(LexemeType.TABLE_LINE);
+            expect(result[offset + 3].type).toBe(LexemeType.BLANK);
+            expect(result[offset + 4].type).toBe(LexemeType.CAPTION_LINE);
+            expect(result[offset + 5].type).toBe(LexemeType.CAPTION_LINE);
         });
 
         it('should classify front page header lines', () => {
@@ -374,7 +503,7 @@ describe('Lexer', () => {
                 '',
                 '   3. More here .................................... 4',
                 '',
-                'Next heading',
+                '3. More here',
                 '',
             ];
 
@@ -402,6 +531,72 @@ describe('Lexer', () => {
             expect(relevantLines[12].type).toBe(LexemeType.BLANK);
             expect(relevantLines[13].type).toBe(LexemeType.HEADING_LINE);
             expect(relevantLines[14].type).toBe(LexemeType.EOF);
+        });
+
+        it('should classify edge cases of not properly indented content', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '',
+                'Table of Contents',
+                '',
+                '   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3',
+                '   2.  Point-to-Point (P2P) Ring Protection . . . . . . . . . . . . .  6',
+                '     2.4.  Analysis of P2P Protection . . . . . . . . . . . . . . . . 15',
+                '       2.4.1.  Recommendations for Protection of P2P Paths',
+                '               Traversing a Ring  . . . . . . . . . . . . . . . . . . 16',
+                '   3.  Point-to-Multipoint Protection . . . . . . . . . . . . . . . . 17',
+                '   Appendix A.  Acknowledgements  . . . . . . . . . . . . . . . . . . 29',
+                '   Appendix B.  Contributors  . . . . . . . . . . . . . . . . . . . . 29',
+                '',
+                '2.4.  Analysis of P2P Protection',
+                '',
+                '   regular text here',
+                '',
+                '2.4.1.  Recommendations for Protection of P2P Paths Traversing a Ring',
+                '',
+                'some not regular false indented text here',
+                '',
+                '6.  Security Considerations',
+                '',
+                '   text here',
+                '',
+            ];
+
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const offset = genericRfcLines.length;
+            const relevantLines = result.slice(offset);
+            expect(result.length).toBe(input.length);
+            expect(relevantLines[0].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[1].type).toBe(LexemeType.HEADING_LINE);
+            expect(relevantLines[2].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[3].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[4].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[5].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[6].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[7].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[8].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[9].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[10].type).toBe(LexemeType.TOC_LINE);
+            expect(relevantLines[11].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[12].type).toBe(LexemeType.HEADING_LINE);
+            expect(relevantLines[13].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[14].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[15].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[16].type).toBe(LexemeType.HEADING_LINE);
+            expect(relevantLines[17].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[18].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[19].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[20].type).toBe(LexemeType.HEADING_LINE);
+            expect(relevantLines[21].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[22].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[23].type).toBe(LexemeType.EOF);
         });
 
         it('should classify caption and figure lines', () => {
@@ -499,6 +694,42 @@ describe('Lexer', () => {
             expect(relevantLines[35].type).toBe(LexemeType.BLANK);
             expect(relevantLines[36].type).toBe(LexemeType.CAPTION_LINE);
             expect(relevantLines[38].type).toBe(LexemeType.EOF);
+        });
+
+        it('should classify packet diagram figure', () => {
+            // Arrange
+            const sut = new Lexer();
+            const input = [
+                ...genericRfcLines,
+                '   text before figure',
+                '',
+                '        0   1   2   3   4   5   6   7',
+                '      +---+---+---+---+---+---+---+---+',
+                '      |  Opt Type = 9 |  Opt Len = 0  |',
+                '      +---+---+---+---+---+---+---+---+',
+                '',
+                '   test after figure',
+                '',
+            ];
+            const tokens = Array.from(tokenize(input.join('\n')));
+
+            // Act
+            const result = sut.lex(tokens);
+
+            // Assert
+            const relevantLines = result.slice(genericRfcLines.length);
+
+            expect(result.length).toBe(input.length);
+
+            expect(relevantLines[0].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[1].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[2].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[3].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[4].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[5].type).toBe(LexemeType.FIGURE_LINE);
+            expect(relevantLines[6].type).toBe(LexemeType.BLANK);
+            expect(relevantLines[7].type).toBe(LexemeType.TEXT_LINE);
+            expect(relevantLines[8].type).toBe(LexemeType.EOF);
         });
 
         it('should classify figure edge case', () => {
@@ -665,7 +896,7 @@ describe('Lexer', () => {
             const offset = genericRfcLines.length;
             expect(result.length).toBe(input.length);
             expect(result[offset].type).toBe(LexemeType.PAGE_FOOTER);
-            expect(result[offset+1].type).toBe(LexemeType.PAGE_BREAK);
+            expect(result[offset + 1].type).toBe(LexemeType.PAGE_BREAK);
             expect(result[offset + 2].type).toBe(LexemeType.PAGE_HEADER);
         });
     });

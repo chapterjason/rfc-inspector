@@ -4,6 +4,8 @@ import type {LexerContext} from "../LexerContext.js";
 import {isBlankLineToken} from "../Utils/IsBlankLineToken.js";
 import {isDataToken} from "../Utils/IsDataToken.js";
 import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
+import {DataLineToken} from "@rfc-inspector/tokenizer";
+import {isPacketDiagramDigitLine} from "../Utils/IsPacketDiagramDigitLine";
 
 /**
  * Figure includes:
@@ -33,7 +35,19 @@ export class FigureLineRule extends AbstractLexerRule {
             return createRuleResult(amount, 100);
         }
 
-        const tokens = [];
+        if (isPacketDiagramDigitLine(token.data)) {
+            const nextLine = context.cursor.peek(1);
+
+            if (isDataToken(nextLine) && FigureLineRule.figureSeparatorExpression.test(nextLine.data)) {
+                const amount = context.countUntil((line) => {
+                    return isBlankLineToken(line);
+                });
+
+                return createRuleResult(amount, 100);
+            }
+        }
+
+        const tokens: DataLineToken[] = [];
         while (context.cursor.hasNext()) {
             const token = context.cursor.next();
 
@@ -44,13 +58,11 @@ export class FigureLineRule extends AbstractLexerRule {
             }
         }
 
-        if (tokens.some(token => {
-            if (isDataToken(token)) {
-                return FigureLineRule.figureSeparatorExpression.test(token.data);
-            }
+        const figureSeparatorTokens = tokens.filter(token => {
+            return FigureLineRule.figureSeparatorExpression.test(token.data)
+        });
 
-            return false;
-        })) {
+        if (figureSeparatorTokens.length > 0) {
             const amount = context.countUntil((line) => {
                 return isBlankLineToken(line);
             });

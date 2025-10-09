@@ -18,6 +18,7 @@ import {CaptionLineRule} from "../Rules/CaptionLineRule.js";
 import {ListLineRule} from "../Rules/ListLineRule.js";
 import {FigureLineRule} from "../Rules/FigureLineRule.js";
 import {TableOfContentsLineRule} from "../Rules/TableOfContentsLineRule.js";
+import {BlockquoteLineRule} from "../Rules/BlockquoteLineRule.js";
 
 /**
  * Creates the heuristic specification for the lexer line classification.
@@ -37,6 +38,7 @@ export function createLexerHeuristicSpecification(): Specification<Token, Lexeme
         createRuleSpecification<Token, LexemeType, LexerParametersRecord>(new TableOfContentsLineRule(), 93),
 
         // Medium-high priority: Content structure
+        createRuleSpecification<Token, LexemeType, LexerParametersRecord>(new BlockquoteLineRule(), 86),
         createRuleSpecification<Token, LexemeType, LexerParametersRecord>(new HeadingLineRule(), 85),
         createRuleSpecification<Token, LexemeType, LexerParametersRecord>(new CaptionLineRule(), 84),
         createRuleSpecification<Token, LexemeType, LexerParametersRecord>(new TableLineRule(), 83),

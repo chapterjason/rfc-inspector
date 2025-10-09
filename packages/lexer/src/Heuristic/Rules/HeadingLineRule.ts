@@ -5,6 +5,8 @@ import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
 import {isDataToken} from "../Utils/IsDataToken.js";
 import {countDataLines} from "../Utils/CountDataLines.js";
 import type {LexerClassification} from "../LexerClassification.js";
+import {stringifyCompact} from "@rfc-inspector/common";
+import {parseTableOfContentsEntry} from "../Utils/TableOfContents/ParseTableOfContentsEntry.js";
 
 export class HeadingLineRule extends AbstractLexerRule {
     constructor() {
@@ -18,7 +20,40 @@ export class HeadingLineRule extends AbstractLexerRule {
             return false;
         }
 
-        if (token.indent === 0) {
+        const {indent, data} = token;
+
+        if (indent === 0) {
+            const tableOfContentEntries = context.parameters.get('tableOfContents');
+
+            if (tableOfContentEntries !== undefined) {
+                let scores = [];
+
+                for (const tableOfContentEntry of tableOfContentEntries) {
+                    const {numbering, title} = tableOfContentEntry;
+                    let score = 0;
+
+                    if (undefined !== numbering && data.includes(numbering)) {
+                        score += 20;
+                    }
+
+                    if (undefined !== title && data.includes(title)) {
+                        score += 80;
+                    }
+
+                    scores.push(score);
+                }
+
+                if (Math.max(...scores) === 0) {
+                    // MAYBE it is still one but only missing in the TOC(?)
+                    const entry = parseTableOfContentsEntry(data);
+
+                    if (undefined === entry.numbering) {
+                        return createRuleResult(countDataLines(context), 5);
+                    }
+                }
+            }
+
+            // @todo rework the countDataLines usage, instead maybe take only max 3 lines, and check if there is a blank line afterwards!
             return createRuleResult(countDataLines(context), 100);
         }
 

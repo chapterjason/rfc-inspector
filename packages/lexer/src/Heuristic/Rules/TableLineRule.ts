@@ -3,9 +3,10 @@ import {AbstractLexerRule} from "./AbstractLexerRule.js";
 import type {LexerContext} from "../LexerContext.js";
 import {LexemeType} from "../../Lexer/Lexeme/LexemeType.js";
 import {isDataToken} from "../Utils/IsDataToken.js";
+import {isPacketDiagramDigitLine} from "../Utils/IsPacketDiagramDigitLine";
 
 export class TableLineRule extends AbstractLexerRule {
-    private static tableSeparatorExpression = /^\+[+-]+\+$/;
+    private static tableSeparatorExpression = /^\+[+-]+\+$/m;
 
     constructor() {
         super("rfc-table", LexemeType.TABLE_LINE, true);
@@ -14,11 +15,18 @@ export class TableLineRule extends AbstractLexerRule {
     public match(context: LexerContext): RuleResult | false {
         const token = context.cursor.peek(0);
 
-        if (!isDataToken(token)){
+        if (!isDataToken(token)) {
             return false;
         }
 
         if (TableLineRule.tableSeparatorExpression.test(token.data)) {
+            const previousToken = context.cursor.peek(-1);
+
+            if (isDataToken(previousToken) && isPacketDiagramDigitLine(previousToken.data)) {
+                // no match, as this is a packet diagram line that is part of the FigureLineRule
+                return false;
+            }
+
             const length = token.data.length;
             const indent = token.indent;
 

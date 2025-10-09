@@ -131,6 +131,7 @@ export class Lexer {
                     case LexemeType.TABLE_LINE:
                     case LexemeType.FIGURE_LINE:
                     case LexemeType.TOC_LINE:
+                    case LexemeType.BLOCKQUOTE_LINE:
                     case LexemeType.TEXT_LINE:
                         return {type, text: token.data, indent: token.indent, ...base} as TextLexeme
                     default:
